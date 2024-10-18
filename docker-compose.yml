@@ -1,0 +1,10 @@
+version: '3.10'
+
+services:
+  data_service:
+    build: .
+    container_name: data_service
+    ports:
+      - "6300:6300"
+    volumes:
+      - .:/app

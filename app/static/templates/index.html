@@ -1,0 +1,11 @@
+<main>
+    <h2>Home Page</h2>
+    <p>This is the home page content.</p>
+    <img src="/static/images/general_photo.jpg" alt="Example Image">
+
+    <h1>Upload Image</h1>
+    <form action="/upload/" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+</main>

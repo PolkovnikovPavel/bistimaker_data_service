@@ -1,0 +1,26 @@
+
+на винде:
+
+docker login
+docker-compose up -d
+docker tag data_service-data_service:latest setorg/data_service:latest
+docker push setorg/data_service:latest
+
+
+на сервере:
+
+docker ps
+docker stop data_service
+docker container prune
+docker images
+docker pull setorg/data_service:latest
+docker rmi 
+
+docker run -d --name data_service -p 6300:6300 -v /usr/local/data:/app/app/data -v /usr/local/static:/app/app/static setorg/data_service:latest
+
+docker ps
+docker logs data_service
+
+
+
+
