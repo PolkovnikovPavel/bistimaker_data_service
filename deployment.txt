@@ -1,5 +1,7 @@
 
 на винде:
+g:
+cd G:\Другие компьютеры\Ноутбук\python\all_servers\bistimaker\data_service
 
 docker login
 docker-compose up -d
@@ -8,15 +10,17 @@ docker push setorg/data_service:latest
 
 
 на сервере:
-
 docker ps
 docker stop data_service
-docker container prune
-docker images
-docker pull setorg/data_service:latest
-docker rmi 
+docker rm data_service
 
-docker run -d --name data_service -p 6300:6300 -v /usr/local/data:/app/app/data -v /usr/local/static:/app/app/static setorg/data_service:latest
+docker images
+docker tag setorg/data_service:latest setorg/data_service:old
+docker rmi setorg/data_service:latest
+docker pull setorg/data_service:latest
+docker rmi setorg/data_service:old
+
+docker run -d --name data_service -p 6300:6300 -v /usr/local/logs/data-service-logs:/app/app/logs -v /usr/local/data:/app/app/data -v /usr/local/static:/app/app/static setorg/data_service:latest
 
 docker ps
 docker logs data_service

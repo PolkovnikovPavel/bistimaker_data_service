@@ -5,8 +5,12 @@ from fastapi.templating import Jinja2Templates
 import hashlib
 import os
 
+from app.api.including_ligging import init_loger
+
 
 app = FastAPI()
+
+logger = init_loger(app, 'api_data')
 
 max_size = 3 * 1024 * 1024  # 3 МБ в байтах
 # Директория для хранения загруженных изображений
@@ -44,16 +48,16 @@ async def startup_event():
         if os.path.isfile(file_path):
             hex = get_hex(file_path)
             file_dictionary[hex] = file_name
-    print('\n=================================')
-    print(f'Different files in {UPLOAD_DIR} =', len(file_dictionary))
-    print("Приложение запущено!")
-    print('=================================\n')
+    logger.warning('=================================')
+    logger.warning(f'Different files in {UPLOAD_DIR} = {len(file_dictionary)}')
+    logger.warning("Приложение запущено!")
+    logger.warning('=================================\n')
     # Здесь можно выполнить какие-то действия, например, подключение к базе данных
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    print("Приложение остановлено!")
+    logger.warning("Приложение остановлено!")
     # Здесь можно выполнить какие-то действия, например, закрытие соединения с базой данных
 
 
@@ -77,6 +81,7 @@ async def upload_image(file: UploadFile = File(...)):
     file_checksum = hashlib.md5(file_content).hexdigest()
 
     if file_checksum in file_dictionary:
+        logger.info(f'Upload image was already uploaded earlier with name {file_dictionary[file_checksum]}')
         return {"message": "File with the same content already exists", "filename": file_dictionary[file_checksum]}
 
     # Проверка на существование файла с таким же именем
@@ -94,7 +99,9 @@ async def upload_image(file: UploadFile = File(...)):
     file_dictionary[file_checksum] = file_name
 
     if file_name != file.filename:
+        logger.info(f'Upload new image with this name already exists, other name = {file_name}')
         return {"message": f"File with this name already exists", "filename": file_name}
+    logger.info(f'Upload new image, name = {file_name}')
     return {"message": f"File uploaded successfully", "filename": file.filename}
 
 
@@ -106,6 +113,7 @@ async def download_image(filename: str):
         raise HTTPException(status_code=404, detail="Image not found")
 
     # Возвращаем файл как ответ
+    logger.info(f'Download successful {filename}')
     return FileResponse(file_path, media_type="image/jpeg")
 
 
